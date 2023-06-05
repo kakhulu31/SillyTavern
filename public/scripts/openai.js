@@ -933,7 +933,7 @@ function loadOpenAISettings(data, settings) {
     $('#pres_pen_counter_openai').text(Number(oai_settings.pres_pen_openai).toFixed(2));
 
     $('#top_p_openai').val(oai_settings.top_p_openai);
-    $('#top_k_openai').val(oai_settings.top_p_openai);
+    $('#top_k_openai').val(oai_settings.top_k_openai);
     $('#top_p_counter_openai').text(Number(oai_settings.top_p_openai).toFixed(2));
     $('#top_k_counter_openai').text(Number(oai_settings.top_k_openai).toFixed(2));
 
