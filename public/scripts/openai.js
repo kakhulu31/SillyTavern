@@ -485,7 +485,7 @@ function getSystemPrompt(nsfw_toggle_prompt, enhance_definitions_prompt, wiBefor
     else {
         // If it's toggled, NSFW prompt goes first.
         if (oai_settings.nsfw_first) {
-            whole_prompt = [nsfw_toggle_prompt, oai_settings.main_prompt, enhance_definitions_prompt + "\n\n" + wiBefore, storyString, wiAfter, extensionPrompt];
+            whole_prompt = [nsfw_toggle_prompt, oai_settings.main_prompt, enhance_definitions_prompt + "\n" + wiBefore, storyString, wiAfter, extensionPrompt];
         }
         else {
             whole_prompt = [oai_settings.main_prompt, nsfw_toggle_prompt, enhance_definitions_prompt, "\n", wiBefore, storyString, wiAfter, extensionPrompt].filter(elem => elem);
@@ -645,7 +645,8 @@ async function sendOpenAIRequest(type, openai_msgs_tosend, signal) {
         "temperature": parseFloat(oai_settings.temp_openai),
         "frequency_penalty": parseFloat(oai_settings.freq_pen_openai),
         "presence_penalty": parseFloat(oai_settings.pres_pen_openai),
-        "top_p": parseFloat(oai_settings.top_p_openai),
+        ...(parseFloat(oai_settings.top_p_openai) > 0 ? { "top_p": parseFloat(oai_settings.top_p_openai) } : {}),
+        ...(parseFloat(oai_settings.top_k_openai) > 0 ? { "top_k": parseFloat(oai_settings.top_k_openai) } : {}),
         "max_tokens": oai_settings.openai_max_tokens,
         "stream": stream,
         "reverse_proxy": oai_settings.reverse_proxy,
@@ -932,7 +933,9 @@ function loadOpenAISettings(data, settings) {
     $('#pres_pen_counter_openai').text(Number(oai_settings.pres_pen_openai).toFixed(2));
 
     $('#top_p_openai').val(oai_settings.top_p_openai);
+    $('#top_k_openai').val(oai_settings.top_p_openai);
     $('#top_p_counter_openai').text(Number(oai_settings.top_p_openai).toFixed(2));
+    $('#top_k_counter_openai').text(Number(oai_settings.top_k_openai).toFixed(2));
 
     if (settings.reverse_proxy !== undefined) oai_settings.reverse_proxy = settings.reverse_proxy;
     $('#openai_reverse_proxy').val(oai_settings.reverse_proxy);
@@ -1046,6 +1049,7 @@ async function saveOpenAIPreset(name, settings) {
         frequency_penalty: settings.freq_pen_openai,
         presence_penalty: settings.pres_pen_openai,
         top_p: settings.top_p_openai,
+        top_k: settings.top_p_openai,
         openai_max_context: settings.openai_max_context,
         openai_max_tokens: settings.openai_max_tokens,
         nsfw_toggle: settings.nsfw_toggle,
@@ -1314,6 +1318,7 @@ function onSettingsPresetChange() {
         frequency_penalty: ['#freq_pen_openai', 'freq_pen_openai', false],
         presence_penalty: ['#pres_pen_openai', 'pres_pen_openai', false],
         top_p: ['#top_p_openai', 'top_p_openai', false],
+        top_k: ['#top_k_openai', 'top_k_openai', false],
         max_context_unlocked: ['#oai_max_context_unlocked', 'max_context_unlocked', true],
         openai_model: ['#model_openai_select', 'openai_model', false],
         openai_max_context: ['#openai_max_context', 'openai_max_context', false],
@@ -1444,6 +1449,12 @@ $(document).ready(function () {
     $(document).on('input', '#top_p_openai', function () {
         oai_settings.top_p_openai = $(this).val();
         $('#top_p_counter_openai').text(Number($(this).val()).toFixed(2));
+        saveSettingsDebounced();
+
+    });
+        $(document).on('input', '#top_k_openai', function () {
+        oai_settings.top_k_openai = $(this).val();
+        $('#top_k_counter_openai').text(Number($(this).val()).toFixed(2));
         saveSettingsDebounced();
 
     });
