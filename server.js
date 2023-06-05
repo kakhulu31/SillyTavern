@@ -2879,7 +2879,6 @@ const setupTasks = async function () {
 
     console.log('Launching...');
 
-    if (autorun) open(autorunUrl.toString());
     console.log('SillyTavern is listening on: ' + tavernUrl);
 }
 
